@@ -5,7 +5,7 @@ import {
   StyleSheet,
   FlatList,
   RefreshControl,
-  SafeAreaView,
+
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
@@ -22,6 +22,7 @@ import { EmptyState } from '../components/EmptyState';
 import { SearchBar } from '../components/SearchBar';
 import { CategoryFilter } from '../components/CategoryFilter';
 import { Colors, Spacing, BorderRadius } from '../theme/theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -160,18 +161,6 @@ export const HomeScreen: React.FC = () => {
             <Text style={styles.brandTitle}>Discover</Text>
             <Text style={styles.brandSubtitle}>Explore curated products from Public API</Text>
           </View>
-
-          {/* Test Error Simulator button */}
-          <TouchableOpacity
-            style={[styles.testErrorBtn, simulateErrorNext && styles.testErrorBtnActive]}
-            onPress={handleTestErrorState}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="bug-outline" size={14} color={simulateErrorNext ? Colors.white : Colors.textSecondary} />
-            <Text style={[styles.testErrorText, simulateErrorNext && styles.testErrorTextActive]}>
-              Simulate Error
-            </Text>
-          </TouchableOpacity>
         </View>
 
         {/* Search Input */}
@@ -239,19 +228,7 @@ export const HomeScreen: React.FC = () => {
           {renderListHeader}
           <SkeletonLoader count={6} />
         </View>
-      ) : errorMessage ? (
-        <View style={styles.fill}>
-          {renderListHeader}
-          <ErrorView
-            title="Failed to Load Products"
-            message={errorMessage}
-            onRetry={() => {
-              setSimulateErrorNext(false);
-              loadProducts();
-            }}
-          />
-        </View>
-      ) : (
+      ) :(
         <FlatList
           data={products}
           keyExtractor={(item) => item.id.toString()}

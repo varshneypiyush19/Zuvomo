@@ -7,7 +7,6 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
   NativeSyntheticEvent,
   NativeScrollEvent,
@@ -17,6 +16,7 @@ import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../types/product';
 import { Colors, Spacing, BorderRadius, Shadows } from '../theme/theme';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type DetailRouteProp = RouteProp<RootStackParamList, 'Detail'>;
 
@@ -30,6 +30,7 @@ export const DetailScreen: React.FC = () => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [activeTab, setActiveTab] = useState<'about' | 'specs' | 'reviews'>('about');
+  const insets = useSafeAreaInsets();
 
   // Images list (fallback to thumbnail if images array empty)
   const images = product.images && product.images.length > 0 ? product.images : [product.thumbnail];
@@ -57,7 +58,7 @@ export const DetailScreen: React.FC = () => {
   const isLowStock = product.stock < 10;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar style="dark" />
 
       {/* Custom Top Navigation Bar */}
@@ -88,6 +89,7 @@ export const DetailScreen: React.FC = () => {
       </View>
 
       <ScrollView
+        style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
@@ -298,7 +300,7 @@ export const DetailScreen: React.FC = () => {
       </ScrollView>
 
       {/* Bottom Floating Bar */}
-      <View style={styles.bottomBar}>
+      <View style={[styles.bottomBar, { paddingBottom: insets.bottom > 0 ? insets.bottom + 8 : Spacing.md }]}>
         <View style={styles.bottomPriceCol}>
           <Text style={styles.bottomPriceLabel}>Total Price</Text>
           <Text style={styles.bottomPriceValue}>${product.price.toFixed(2)}</Text>
@@ -348,8 +350,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginHorizontal: Spacing.sm,
   },
+  scrollView: {
+    flex: 1,
+  },
   scrollContent: {
-    paddingBottom: 110,
+    paddingBottom: Spacing.xl,
   },
   carouselContainer: {
     height: 320,
@@ -651,15 +656,11 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   bottomBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     backgroundColor: Colors.white,
     borderTopWidth: 1,
     borderTopColor: Colors.borderLight,
     paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.md,
+    paddingTop: Spacing.md,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
